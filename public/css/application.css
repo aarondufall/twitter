@@ -9,3 +9,17 @@ button a {
   text-decoration: none;
   color: black;
 }
+
+#tweet {
+  width: 600px;
+  border: 1px solid;
+  margin:0 auto;
+  margin-top:30px;
+  padding: 15px;
+}
+
+
+#tweet form {
+  margin: 0 auto;
+  text-align: center;
+}

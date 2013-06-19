@@ -1,9 +1,12 @@
 get '/' do
-  erb :index
+  if session[:user]
+    erb :tweet
+  else
+    erb :index
+  end
 end
 
-get '/sign_in' do
-  # the `request_token` method is defined in `app/helpers/oauth.rb`
+get '/sign_in' do 
   redirect request_token.authorize_url
 end
 
@@ -27,9 +30,31 @@ get '/auth' do
   token = @access_token.token 
   secret =  @access_token.secret
   @user = User.find_or_create_by_user_id(user_id: user_id, username: username, oauth_token: token, oauth_secret: secret)
+  session[:user] = @user.id
+  redirect to '/tweet'
+end
 
-  erb :index
-  
+get '/tweet' do
+  if session[:user]
+    erb :tweet
+  else
+    redirect '/'
+  end
+end
+
+post '/tweet' do
+  job_id = current_user.tweet_in(10, params[:status])
+  if request.xhr?
+    {jobId: job_id}.to_json
+  else
+    erb :tweet
+  end
+end
+
+
+get '/status/:job_id' do
+  job_status = job_is_complete(params[:job_id])
+  {jobStatus: job_status}.to_json
 end
 
 
